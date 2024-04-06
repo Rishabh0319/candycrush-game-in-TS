@@ -1,1 +1,6 @@
 node_modules/
+
+*.js
+
+# Ignore JavaScript files in the dist directory
+dist/*.js
