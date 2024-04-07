@@ -2,21 +2,25 @@
 let candies: string[] = ['Blue', 'Orange', 'Green', 'Yellow', 'Red', 'Purple'];
 let rows: number = 9;
 let columns: number = 9;
+let score: number = 0;
 let board: HTMLImageElement[][] = [];
 
 let sourceTile: HTMLImageElement;
 let destinationTile: HTMLImageElement;
 
 // load game on browser
-window.onload = function () {
+window.onload = function (): void {
     startGame();
+
     // check 10X / sec 
     setInterval(() => {
         crushingCandy();
+        slideDownCandy();
+        generateCandy()
     }, 100);
 };
 
-function startGame() {
+function startGame(): void {
     loadRandomCandiesOnBoard();
 }
 
@@ -61,7 +65,7 @@ function randomCandy(): string {
 }
 
 // Load the Random candies on play board
-function loadRandomCandiesOnBoard() {
+function loadRandomCandiesOnBoard(): void {
     for (let r = 0; r < rows; r++) {
         let row: HTMLImageElement[] = [];
         for (let c = 0; c < columns; c++) {
@@ -106,7 +110,7 @@ function isAdjacent(sourceTile: HTMLImageElement, destinationTile: HTMLImageElem
 }
 
 // swap the tiles
-function swapTiles(sourceTile: HTMLImageElement, destinationTile: HTMLImageElement) {
+function swapTiles(sourceTile: HTMLImageElement, destinationTile: HTMLImageElement): void {
     let sourceTileImage: string = sourceTile.src;
     let destinationTileImage: string = destinationTile.src;
 
@@ -116,14 +120,20 @@ function swapTiles(sourceTile: HTMLImageElement, destinationTile: HTMLImageEleme
 }
 
 // crushing candies function
-function crushingCandy() {
+function crushingCandy(): void {
     crush3CandiesRowCol();
     //    crush4CandiesRowCol();  //develop in future
     //    crush5CandiesRowCol();  // develop in future
+
+    // display the score on the screen on every crush
+    let showScore: HTMLElement | null = document.querySelector('#score');
+    if (showScore != null) {
+        showScore.innerText = String(score);
+    }
 }
 
 // crush the 3 similar candies on same row or column
-function crush3CandiesRowCol() {
+function crush3CandiesRowCol(): void {
 
     // crash candy Row wise
     for (let r = 0; r < rows; r++) {
@@ -137,6 +147,9 @@ function crush3CandiesRowCol() {
                 candy1.src = './assets/images/blank.png';
                 candy2.src = './assets/images/blank.png';
                 candy3.src = './assets/images/blank.png';
+
+                // increase score by 30 if 3 candy crush
+                score += 30;
             }
 
         }
@@ -155,6 +168,9 @@ function crush3CandiesRowCol() {
                 candy1.src = './assets/images/blank.png';
                 candy2.src = './assets/images/blank.png';
                 candy3.src = './assets/images/blank.png';
+
+                // increase score by 30 if 3 candy crush
+                score += 30;
             }
 
         }
@@ -195,6 +211,32 @@ function checkValidMove(): boolean {
     }
 
     return false;
+}
+
+// slide down candies if any empty space in board
+function slideDownCandy(): void {
+    for (let c = 0; c < columns; c++) {
+        let ind = rows - 1;
+        for (let r = columns - 1; r >= 0; r--) {
+            if (!board[r][c].src.includes('blank')) {
+                board[ind][c].src = board[r][c].src;
+                ind -= 1;
+            }
+        }
+
+        for (let r = ind; r >= 0; r--) {
+            board[r][c].src = './assets/images/blank.png';
+        }
+    }
+}
+
+// generate new candies for fill the empty spaces in board
+function generateCandy(): void {
+    for (let c = 0; c < columns; c++) {
+        if (board[0][c].src.includes('blank')) {
+            board[0][c].src = `./assets/images/${randomCandy()}.png`;
+        }
+    }
 }
 
 // ******* Some Functionalities in GAME ends here *******

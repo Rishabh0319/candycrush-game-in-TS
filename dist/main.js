@@ -2,6 +2,7 @@
 let candies = ['Blue', 'Orange', 'Green', 'Yellow', 'Red', 'Purple'];
 let rows = 9;
 let columns = 9;
+let score = 0;
 let board = [];
 let sourceTile;
 let destinationTile;
@@ -11,6 +12,8 @@ window.onload = function () {
     // check 10X / sec 
     setInterval(() => {
         crushingCandy();
+        slideDownCandy();
+        generateCandy();
     }, 100);
 };
 function startGame() {
@@ -96,6 +99,11 @@ function crushingCandy() {
     crush3CandiesRowCol();
     //    crush4CandiesRowCol();  //develop in future
     //    crush5CandiesRowCol();  // develop in future
+    // display the score on the screen on every crush
+    let showScore = document.querySelector('#score');
+    if (showScore != null) {
+        showScore.innerText = String(score);
+    }
 }
 // crush the 3 similar candies on same row or column
 function crush3CandiesRowCol() {
@@ -110,6 +118,8 @@ function crush3CandiesRowCol() {
                 candy1.src = './assets/images/blank.png';
                 candy2.src = './assets/images/blank.png';
                 candy3.src = './assets/images/blank.png';
+                // increase score by 30 if 3 candy crush
+                score += 30;
             }
         }
     }
@@ -124,6 +134,8 @@ function crush3CandiesRowCol() {
                 candy1.src = './assets/images/blank.png';
                 candy2.src = './assets/images/blank.png';
                 candy3.src = './assets/images/blank.png';
+                // increase score by 30 if 3 candy crush
+                score += 30;
             }
         }
     }
@@ -155,6 +167,29 @@ function checkValidMove() {
         }
     }
     return false;
+}
+// slide down candies if any empty space in board
+function slideDownCandy() {
+    for (let c = 0; c < columns; c++) {
+        let ind = rows - 1;
+        for (let r = columns - 1; r >= 0; r--) {
+            if (!board[r][c].src.includes('blank')) {
+                board[ind][c].src = board[r][c].src;
+                ind -= 1;
+            }
+        }
+        for (let r = ind; r >= 0; r--) {
+            board[r][c].src = './assets/images/blank.png';
+        }
+    }
+}
+// generate new candies for fill the empty spaces in board
+function generateCandy() {
+    for (let c = 0; c < columns; c++) {
+        if (board[0][c].src.includes('blank')) {
+            board[0][c].src = `./assets/images/${randomCandy()}.png`;
+        }
+    }
 }
 // ******* Some Functionalities in GAME ends here *******
 // prevent Default Events
